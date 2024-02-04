@@ -3,8 +3,10 @@ using System.Reflection;
 
 namespace ConfigFactory.CustomConfig
 {
-    public abstract class AbstractCustomConfigFactory<T>
+    public abstract class AbstractCustomConfigFactory<TOutput>
     {
+        #region Fields/Ctor
+
         private readonly ICustomConfigProvider _customConfigProvider;
         private readonly CustomConfigCategoryType _configCategoryType;
         protected AbstractCustomConfigFactory(ICustomConfigProvider customConfigProvider
@@ -14,17 +16,19 @@ namespace ConfigFactory.CustomConfig
             _configCategoryType = configCategoryType;
         }
 
+        #endregion
+
         #region Public Methods
-        public async Task<T> GetCustomConfigAsync(UserDto user)
+        public async Task<TOutput> GetCustomConfigAsync(UserDto user)
         {
             var configValues = await _customConfigProvider.GetCustomConfigAsync(user, _configCategoryType) ?? new List<CustomConfigDto>();
-            var type = typeof(T);
-            var newConfig = Activator.CreateInstance<T>();
+            var concreteType = typeof(TOutput);
+            var newConfig = Activator.CreateInstance<TOutput>();
 
             if (configValues.Count == 0)
                 return newConfig;
 
-            SetConfigValues(configValues, type, newConfig);
+            SetConfigValues(configValues, concreteType, newConfig);
 
             return await CustomConfiguration(user, configValues, newConfig);
         }
@@ -33,18 +37,22 @@ namespace ConfigFactory.CustomConfig
 
         #region Virtual Methods
 
-        private protected virtual ValueTask<T> CustomConfiguration(UserDto user,
-            List<CustomConfigDto> configList, T config) => ValueTask.FromResult(config);
+        private protected virtual ValueTask<TOutput> CustomConfiguration(UserDto user,
+            List<CustomConfigDto> configList, TOutput config) => ValueTask.FromResult(config);
 
         #endregion
 
         #region Private Methods
-        private static void SetConfigValues(IEnumerable<CustomConfigDto> configValues, Type type, T newConfig)
+        private static void SetConfigValues(IEnumerable<CustomConfigDto> configValues, Type concreteType, TOutput newConfig)
         {
             foreach (var config in configValues)
             {
-                var property = type.GetProperty(config.Key);
-                if (property == null) continue; ;
+                var property = concreteType.GetProperty(config.Key);
+
+                /*  Config key (Name) in the db table must match the property name in the config class (case-insensitive)
+                 *  Behavior here is up to you to either ignore/log/throw when a config key db entry is miss-spelled.  */
+
+                //if (property == null) continue;  
 
                 IsValidPropertyOrThrow(property, config);
 
@@ -68,7 +76,7 @@ namespace ConfigFactory.CustomConfig
         private static void IsValidPropertyOrThrow(PropertyInfo property, CustomConfigDto config)
         {
             if (property == null)
-                throw new Exception($"{config.Key} is not a valid property on Type={typeof(T).Name}");
+                throw new Exception($"{config.Key} is not a valid property on Type={typeof(TOutput).Name}");
         }
 
         #endregion
