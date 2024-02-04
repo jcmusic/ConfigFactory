@@ -1,4 +1,4 @@
-﻿namespace ConfigFactory.Models
+﻿namespace ConfigFactory.CustomConfig
 {
     public class CustomConfigDto
     {

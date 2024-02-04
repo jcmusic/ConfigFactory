@@ -1,11 +1,9 @@
 ﻿using ConfigFactory.DAL;
 using ConfigFactory.DAL.Entities;
-using ConfigFactory.Enums;
-using ConfigFactory.Models;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
-namespace Omnichain.Core.Providers
+namespace ConfigFactory.CustomConfig
 {
     public interface ICustomConfigProvider
     {

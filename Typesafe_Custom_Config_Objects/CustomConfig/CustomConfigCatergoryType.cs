@@ -1,4 +1,4 @@
-﻿namespace ConfigFactory.Enums
+﻿namespace ConfigFactory.CustomConfig
 {
     public enum CustomConfigCategoryType
     {

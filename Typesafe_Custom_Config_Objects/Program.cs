@@ -1,8 +1,6 @@
+using ConfigFactory.CustomConfig;
 using ConfigFactory.DAL;
-using ConfigFactory.Factories;
-using ConfigFactory.Services;
 using Microsoft.EntityFrameworkCore;
-using Omnichain.Core.Providers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +20,6 @@ builder.Services.AddDbContext<UsersContext>(
 
 builder.Services.AddScoped<ICustomConfigProvider, CustomConfigProvider>();
 builder.Services.AddScoped<IInventoryConfigFactory, InventoryConfigFactory>();
-builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 var app = builder.Build();
 

@@ -1,10 +1,7 @@
-﻿using ConfigFactory.Enums;
-using ConfigFactory.Models;
-using Omnichain.Core.Providers;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace ConfigFactory.Factories
+namespace ConfigFactory.CustomConfig
 {
     public abstract class AbstractCustomConfigFactory<T>
     {
@@ -31,13 +28,14 @@ namespace ConfigFactory.Factories
 
             return await CustomConfiguration(user, configValues, newConfig);
         }
+
         #endregion
-        /// <summary>
-        /// Override this method to implement custom config values. e.g; fetching a value from a DB table. 
-        /// </summary>
+
         #region Virtual Methods
-        private protected virtual ValueTask<T> CustomConfiguration(UserDto user, 
+
+        private protected virtual ValueTask<T> CustomConfiguration(UserDto user,
             List<CustomConfigDto> configList, T config) => ValueTask.FromResult(config);
+
         #endregion
 
         #region Private Methods
@@ -46,7 +44,7 @@ namespace ConfigFactory.Factories
             foreach (var config in configValues)
             {
                 var property = type.GetProperty(config.Key);
-                if(property == null) continue;;
+                if (property == null) continue; ;
 
                 IsValidPropertyOrThrow(property, config);
 
